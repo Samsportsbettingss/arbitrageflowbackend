@@ -194,6 +194,13 @@ class OddsService {
             ];
 
             const result = await db.query(query, values);
+            
+            // Check if query returned any rows
+            if (!result || !result.rows || result.rows.length === 0) {
+                console.warn('Opportunity saved but no ID returned');
+                return null;
+            }
+            
             return result.rows[0].id;
         } catch (error) {
             if (error.code === '23505') {
@@ -201,7 +208,8 @@ class OddsService {
                 return null;
             }
             console.error('Error saving opportunity:', error);
-            throw error;
+            // Don't throw - just return null so scanning can continue
+            return null;
         }
     }
 
